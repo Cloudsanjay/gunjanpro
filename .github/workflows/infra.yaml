@@ -1,0 +1,17 @@
+name: TerraformInfraCode  #ProjectName
+
+on: #ye hai trigger
+  push: 
+    branches: 
+      - feature/**
+  pull_request:
+    branches:
+      - main
+
+jobs: #Yahan job se hi start hota h
+  Terrafom-plan: #Job ka name h
+    runs-on: ubuntu-latest
+    steps: 
+      - name: repo checkout
+        users: actions/checkout@v5
+
