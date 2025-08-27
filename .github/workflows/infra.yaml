@@ -1,61 +1,108 @@
-name: TerraformInfraCode  #ProjectName
+# name: TerraformInfraCode  #ProjectName
 
-on: #ye hai trigger
-  push: 
-    branches: 
-      - main
-      - feature/**
-  # pull_request: #PR ke baad main branch me merge hone par pipeline trigger ho.
-  #   branches:
-  #     - main
-permissions:
-  id-token: write
-  contents: read
+# on: #ye hai trigger
+#   push: 
+#     branches: 
+#       - main
+#       - feature/**
+#   # pull_request: #PR ke baad main branch me merge hone par pipeline trigger ho.
+#   #   branches:
+#   #     - main
+# permissions:
+#   id-token: write
+#   contents: read
 
 
-env:
-  RESOURCE_GROUP_NAME: ${{secrets.RESOURCE_GROUP_NAME}}
-  STORAGE_ACCOUNT_NAME: ${{secrets.STORAGE_ACCOUNT_NAME}}
-  CONTAINER_NAME: ${{secrets.CONTAINER_NAME}}
-  KEY_NAME: ${{secrets.KEY_NAME}}
+# env:
+#   RESOURCE_GROUP_NAME: ${{secrets.RESOURCE_GROUP_NAME}}
+#   STORAGE_ACCOUNT_NAME: ${{secrets.STORAGE_ACCOUNT_NAME}}
+#   CONTAINER_NAME: ${{secrets.CONTAINER_NAME}}
+#   KEY_NAME: ${{secrets.KEY_NAME}}
   
 
  
-jobs: #Yahan job se hi start hota h
-  Terrafom-planning-job: #Job ka name h
-    runs-on: ubuntu-latest   #Microsoft hosted agent
-    steps: 
-      - name: repo checkout    #hum repo ka code runner me copy rahe h
-        uses: actions/checkout@v5
+# jobs: #Yahan job se hi start hota h
+#   Terrafom-planning-job: #Job ka name h
+#     runs-on: ubuntu-latest   #Microsoft hosted agent
+#     steps: 
+#       - name: repo checkout    #hum repo ka code runner me copy rahe h
+#         uses: actions/checkout@v5
 
-#   GitHub Actions me order fix hai:
-#  - name: → step ka naam
-#    uses: ya run: → kya execute karna hai
-#    with: → inputs
+# #   GitHub Actions me order fix hai:
+# #  - name: → step ka naam
+# #    uses: ya run: → kya execute karna hai
+# #    with: → inputs
 
     
-      - name: Az login      #Azure login kar rahe h
-        uses: Azure/login@v2
-        with: 
-          creds: ${{secrets.AZURE_CREDENTIALS}}
-# az ad sp create-for-rbac --name "github-actions-sp" --role "Contributor" --scopes "/subscriptions/<Subscription_ID" --sdk-auth
+#       - name: Az login      #Azure login kar rahe h
+#         uses: Azure/login@v2
+#         with: 
+#           creds: ${{secrets.AZURE_CREDENTIALS}}
+# # az ad sp create-for-rbac --name "github-actions-sp" --role "Contributor" --scopes "/subscriptions/<Subscription_ID" --sdk-auth
 
-      - name: setup terraform   #Terraform install kar rahe h
-        uses: hashicorp/setup-terraform@v2
-        with: 
+#       - name: setup terraform   #Terraform install kar rahe h
+#         uses: hashicorp/setup-terraform@v2
+#         with: 
+#           terraform_version: latest
+          
+#       - name: terraform init
+#         run: |
+#           terraform init \
+#           - backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+#           - backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+#           - backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
+#           - backend-config="key_name=${{ secrets.KEY_NAME }}"
+
+
+          
+name: Terraform Infra Creation
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+      - release/**
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  
+env:
+  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+  STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+  CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
+  STATE_FILE: ${{ secrets.STATE_FILE }}
+
+jobs:
+  Terraform-Plan:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout Repository
+       uses: actions/checkout@v5
+
+     - name: Azure Login
+       uses: Azure/login@v2
+       with:                                                
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+     - name: Setup Terraform
+       uses: hashicorp/setup-terraform@v2
+       with:                                                
           terraform_version: latest
           
-      - name: terraform init
-        run: |
-          terraform init \
-          - backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
-          - backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
-          - backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
-          - backend-config="key_name=${{ secrets.KEY_NAME }}"
-
-
-          
-
+     - name: Terraform Init
+       run: |
+         terraform init \
+         -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP }}" \
+         -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+         -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
+         -backend-config="key=${{ secrets.STATE_FILE }}"
 
 
 
