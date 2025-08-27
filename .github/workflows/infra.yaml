@@ -104,7 +104,12 @@ jobs:
          -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
          -backend-config="key=${{ secrets.STATE_FILE }}"
 
-
+     - name: Setup TFlint
+       uses: terraform-linters/setup-tflint@v5
+       with:
+         tflint_version: latest
+     - run: tflint --init
+     - run: tflint
 
         
         
