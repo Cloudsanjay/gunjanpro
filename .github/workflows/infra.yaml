@@ -8,12 +8,17 @@ on: #ye hai trigger
   # pull_request: #PR ke baad main branch me merge hone par pipeline trigger ho.
   #   branches:
   #     - main
+permissions:
+  id-token: write
+  contents: read
+
 
 env:
   RESOURCE_GROUP_NAME: ${{secrets.RESOURCE_GROUP_NAME}}
   STORAGE_ACCOUNT_NAME: ${{secrets.STORAGE_ACCOUNT_NAME}}
   CONTAINER_NAME: ${{secrets.CONTAINER_NAME}}
   KEY_NAME: ${{secrets.KEY_NAME}}
+  
 
  
 jobs: #Yahan job se hi start hota h
