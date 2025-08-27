@@ -1,17 +1,4 @@
-variable "rg_name" {
-type = string
-default = rg1
-}
 
-variable "location" {
-type = string
-default = eastus
-}
-
-variable "vnet" {
-type = string
-default = vnet1
-}
 
 
 data "azurerm_resource_group" "example" {
@@ -19,8 +6,8 @@ data "azurerm_resource_group" "example" {
 }
 
 resource "azurerm_virtual_network" "example" {
-  name     = var.vnet
-  location = var.location
-  resource_group_name = var.rg_name
+  name     = vnet1
+  location =  data.azurerm_resource_group.example.location
+  resource_group_name =  data.azurerm_resource_group.example.rg_name
   address_space = ["10.0.0.0/16"]
 }
