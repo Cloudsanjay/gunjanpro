@@ -8,16 +8,29 @@ on: #ye hai trigger
     branches:
       - main
 
+env:
+  RESOURCE_GROUP: ${{secrets.RESOURCE_GROUP}}
+
 jobs: #Yahan job se hi start hota h
-  Terrafom-plan: #Job ka name h
-    runs-on: ubuntu-latest
+  Terrafom-planning-job: #Job ka name h
+    runs-on: ubuntu-latest   #Microsoft hosted agent
     steps: 
-      - name: repo checkout
+      - name: repo checkout    #hum repo ka code runner me copy rahe h
         uses: actions/checkout@v5
     
-
-
-
+      - name: Az login      #Azure login kar rahe h
+        uses: Azure/login@v2
+        with: 
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+        
+      - name: setup terraform   #Terraform install kar rahe h
+        uses: hashicorp/setup-terraform@v2
+        with: 
+          terraform_version: latest
+      - name: terraform init
+        run: terraform init
+        
+          
 
 
 
