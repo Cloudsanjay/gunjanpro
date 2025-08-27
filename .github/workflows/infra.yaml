@@ -108,7 +108,6 @@ jobs:
        uses: terraform-linters/setup-tflint@v5
        with:
          tflint_version: latest
-     - run: tflint --init
      - run: tflint
 
         
