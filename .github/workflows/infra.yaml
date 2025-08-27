@@ -22,8 +22,7 @@ jobs: #Yahan job se hi start hota h
     steps: 
       - name: repo checkout    #hum repo ka code runner me copy rahe h
         uses: actions/checkout@v5
-        with:
-          repository: https://github.com/Cloudsanjay/gunjanpro.git
+
 #   GitHub Actions me order fix hai:
 #  - name: → step ka naam
 #    uses: ya run: → kya execute karna hai
