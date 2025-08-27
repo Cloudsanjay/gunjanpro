@@ -4,32 +4,52 @@ on: #ye hai trigger
   push: 
     branches: 
       - main
-  pull_request:
-    branches:
-      - main
+      - feature/**
+  # pull_request: #PR ke baad main branch me merge hone par pipeline trigger ho.
+  #   branches:
+  #     - main
 
 env:
-  RESOURCE_GROUP: ${{secrets.RESOURCE_GROUP}}
+  RESOURCE_GROUP_NAME: ${{secrets.RESOURCE_GROUP_NAME}}
+  STORAGE_ACCOUNT_NAME: ${{secrets.STORAGE_ACCOUNT_NAME}}
+  CONTAINER_NAME: ${{secrets.CONTAINER_NAME}}
+  KEY_NAME: ${{secrets.KEY_NAME}}
 
+ 
 jobs: #Yahan job se hi start hota h
   Terrafom-planning-job: #Job ka name h
     runs-on: ubuntu-latest   #Microsoft hosted agent
     steps: 
       - name: repo checkout    #hum repo ka code runner me copy rahe h
         uses: actions/checkout@v5
+        with:
+          repository: https://github.com/Cloudsanjay/gunjanpro.git
+#   GitHub Actions me order fix hai:
+#  - name: → step ka naam
+#    uses: ya run: → kya execute karna hai
+#    with: → inputs
+
     
       - name: Az login      #Azure login kar rahe h
         uses: Azure/login@v2
         with: 
           creds: ${{secrets.AZURE_CREDENTIALS}}
-        
+# az ad sp create-for-rbac --name "github-actions-sp" --role "Contributor" --scopes "/subscriptions/<Subscription_ID" --sdk-auth
+
       - name: setup terraform   #Terraform install kar rahe h
         uses: hashicorp/setup-terraform@v2
         with: 
           terraform_version: latest
+          
       - name: terraform init
-        run: terraform init
-        
+        run: |
+          terraform init \
+          - backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+          - backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+          - backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
+          - backend-config="key_name=${{ secrets.KEY_NAME }}"
+
+
           
 
 
